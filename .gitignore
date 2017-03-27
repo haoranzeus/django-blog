@@ -1,0 +1,9 @@
+*.swp
+node_modules
+package.json
+venv
+__pycache__
+*.pyc
+node_modules
+env*.conf
+wxpy.pkl
