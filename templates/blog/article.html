@@ -3,6 +3,9 @@
 {% block body_tag %}
 <body id="blog-article-sidebar">
 {% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/mystyle.css' %}">
+{% endblock %}
 {% block body %}
 <!-- content srart -->
 <div class="am-g am-g-fixed blog-fixed blog-content">
@@ -72,6 +75,24 @@
         </ul>
         
         <hr>
+        <div id=rep-show-thread>
+          <div id="rep-show-reset">
+            <ul class="rep-show-comments" style="opacity: 1;">
+              <li class="rep-show-post">
+                <div class="rep-show-self">
+                  <div class="rep-show-comment-body">
+                    <div class="rep-show-comment-header">
+                      <div class="rep-show-user-name rep-show-highlight">
+                        commenter A
+                      </div>
+                    </div>
+                    <p class="rep-show-comment-text">comment text</p>
+                  </div>
+                </div>
+              </lid>
+            </ul>
+          </div>
+        </div>
 
         <form class="am-form am-g">
             <h3 class="blog-comment">评论</h3>
