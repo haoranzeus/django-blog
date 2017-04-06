@@ -2,6 +2,7 @@ import markdown
 import pinyin
 from django.utils import timezone
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -67,3 +68,12 @@ class TagModel(models.Model):
 
     class Meta:
         db_table = 'tag'
+
+
+class Comment(models.Model):
+    comment = models.CharField('comment content', max_length=190)
+    article = models.ForeignKey(
+            'ArticleModel',  on_delete=models.CASCADE, related_name='comment')
+    user = models.ForeignKey(
+            User, on_delete=models.CASCADE, related_name='comment')
+    create_time = models.DateTimeField('create time', auto_now_add=True)
