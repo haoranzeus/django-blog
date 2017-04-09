@@ -3,14 +3,14 @@ import datetime
 from django.views import View
 from django.urls import reverse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth import login
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.utils import IntegrityError
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
-from .forms import LoginForm, RegisterForm
-from .models import ArticleModel, Classify
+from .forms import LoginForm, RegisterForm, CommentForm
+from .models import ArticleModel, Classify, Comment
 
 # Create your views here.
 
@@ -30,6 +30,11 @@ def testview(request):
         return render(request, 'login.html')
 
 
+class HomeView(View):
+    def get(self, request):
+        return HttpResponseRedirect(reverse('blog:indexcenter'))
+
+
 class LoginView(View):
     template_name = 'auth/login.html'
 
@@ -38,14 +43,33 @@ class LoginView(View):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
-            print(username, password)
-        return render(request, self.template_name, self.kwargs)
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                try:
+                    next = request.GET.get('next')
+                    return redirect(next)
+                except:
+                    return HttpResponseRedirect(reverse('blog:indexcenter'))
+            else:
+                return render(request, self.template_name, self.kwargs)
+                
 
     def get(self, request):
         kwargs = {
             'blog_name': os.environ.get('BLOG_NAME', 'AmazeUI')
         }
         return render(request, self.template_name, kwargs)
+
+
+class LogOutView(View):
+    def get(self, request):
+        logout(request)
+        try:
+            next = request.GET.get('next')
+            return redirect(next)
+        except:
+            return HttpResponseRedirect(reverse('blog:indexcenter'))
 
 
 class RegisterView(View):
@@ -76,7 +100,7 @@ class RegisterView(View):
                 'blog_name': os.environ.get('BLOG_NAME', 'AmazeUI')
             }
             return render(request, self.template_name, kwargs)
-        return HttpResponseRedirect(reverse('testview'))
+        return HttpResponseRedirect(reverse('blog:indexcenter'))
 
     def get(self, request):
         kwargs = {
@@ -102,7 +126,12 @@ class IndexCenterView(View):
         kwargs = {
             'page_obj': page_obj,
             'classifications': classifications,
+            'current_path': request.path,
         }
+        if request.user.is_authenticated:
+            kwargs['logged'] = True
+        else:
+            kwargs['logged'] = False
         return render(request, self.template_name, kwargs)
 
 
@@ -123,7 +152,12 @@ class IndexClassify(View):
         kwargs = {
             'page_obj': page_obj,
             'classifications': classifications,
+            'current_path': request.path,
         }
+        if request.user.is_authenticated:
+            kwargs['logged'] = True
+        else:
+            kwargs['logged'] = False
         return render(request, self.template_name, kwargs)
 
 
@@ -136,14 +170,19 @@ class TimeLineView(View):
         kwargs = {
             'articles': articles,
             'classifications': classifications,
+            'current_path': request.path,
         }
+        if request.user.is_authenticated:
+            kwargs['logged'] = True
+        else:
+            kwargs['logged'] = False
         return render(request, self.template_name, kwargs)
 
 
 class ArticleView(View):
     template_name = 'blog/article.html'
 
-    def get(self, request, art_date, pinyin_title):
+    def render_kwargs(self, request, art_date, pinyin_title):
         year = int(art_date[:4])
         month = int(art_date[4:6])
         day = int(art_date[6:])
@@ -155,11 +194,32 @@ class ArticleView(View):
         article_prev = ArticleModel.objects.filter(id__lt=article.id).last()
         article_next = ArticleModel.objects.filter(id__gt=article.id).first()
         classifications = Classify.objects.all()
+        comments = Comment.objects.filter(article=article)
         kwargs = {
             'article': article,
             'tags': tags,
             'article_prev': article_prev,
             'article_next': article_next,
             'classifications': classifications,
+            'comments': comments,
+            'current_path': request.path,
         }
+        if request.user.is_authenticated:
+            kwargs['logged'] = True
+        else:
+            kwargs['logged'] = False
+        return kwargs
+
+    def get(self, request, art_date, pinyin_title):
+        kwargs = self.render_kwargs(request, art_date, pinyin_title)
         return render(request, self.template_name, kwargs)
+
+    def post(self, request, art_date, pinyin_title):
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.cleaned_data['comment']
+            user = request.user
+            kwargs = self.render_kwargs(request, art_date, pinyin_title)
+            Comment.objects.create(
+                    comment=comment, article=kwargs['article'], user=user)
+            return redirect(request.path)

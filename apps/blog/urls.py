@@ -1,9 +1,10 @@
 from django.conf.urls import url
 from apps.blog import views
 
-app_name = 'users'
+app_name = 'blog'
 urlpatterns = [
     url(r'^login/', views.LoginView.as_view(), name='login'),
+    url(r'^logout/', views.LogOutView.as_view(), name='logout'),
     url(r'^register/', views.RegisterView.as_view(), name='register'),
 
     url(r'^index/', views.IndexCenterView.as_view(), name='indexcenter'),

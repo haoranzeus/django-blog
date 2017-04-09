@@ -68,3 +68,30 @@
     padding: 0 0 0 0;
     margin: 0 0 0 0;
 }
+.rep-login-buttons {
+  width: 100%;
+  position: relative;
+  padding: 10px 0 6px;
+}
+.rep-social-links {
+  float: left;
+  width: 306px;
+}
+.rep-service-list {
+  float: left;
+  height: 16px;
+  width: 54px;
+  padding: 4px 0;
+  margin: 0 0 0 6px;
+}
+#rep-show-reset a {
+  cursor: pointer;
+  text-decoration: none;
+  color: #777;
+  background-color: transparent;
+  transition: color .15s linear;
+}
+#rep-show-reset .rep-service-list a {
+  vertical-align: middle;
+  padding-right: 3px;
+}

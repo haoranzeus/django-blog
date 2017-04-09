@@ -77,3 +77,6 @@ class Comment(models.Model):
     user = models.ForeignKey(
             User, on_delete=models.CASCADE, related_name='comment')
     create_time = models.DateTimeField('create time', auto_now_add=True)
+
+    class Meta:
+        db_table = 'comment'
