@@ -41,9 +41,11 @@ class LoginView(View):
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
+            # username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
+            user = get_object_or_404(User, email=email)
             password = form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
+            user = authenticate(username=user.username, password=password)
             if user is not None:
                 login(request, user)
                 try:
@@ -79,13 +81,21 @@ class RegisterView(View):
         form = RegisterForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
+            email = form.cleaned_data['email']
             password1 = form.cleaned_data['password1']
             password2 = form.cleaned_data['password2']
+            email_user = User.objects.filter(email=email)
+            if email_user != []:
+                kwargs = {
+                    'blog_name': os.environ.get('BLOG_NAME', 'AmazeUI'),
+                    'email_unusable': True,
+                }
+                return render(request, self.template_name, kwargs)
             if password1 != password2:
                 print('password mismatch')
             else:
                 try:
-                    user = User.objects.create_user(username, '', password1)
+                    user = User.objects.create_user(username, email, password1)
                 except IntegrityError:
                     kwargs = {
                         'blog_name': os.environ.get('BLOG_NAME', 'AmazeUI'),

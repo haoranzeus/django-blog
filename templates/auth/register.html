@@ -24,6 +24,14 @@
         {% endif %}
       </div>
       <br>
+      <div class="am-input-group am-radius am-animation-slide-left">       
+        <input type="email" name="email" id="doc-vld-email-2-1" class="am-radius" data-validation-message="请输入正确邮箱地址" placeholder="邮箱" required/>
+        <span class="am-input-group-label log-icon am-radius"><i class="am-icon-user am-icon-sm am-icon-fw"></i></span>
+        {% if email_unusable %}
+        <div class="log-alert am-alert am-alert-danger am-radius" style="">该邮箱已被注册</div>
+        {% endif %}
+      </div>
+      <br>
       <div class="am-input-group am-animation-slide-left log-animation-delay">       
         <input type="password" name="password1" id="log-password" class="am-form-field am-radius log-input" placeholder="密码" minlength="8" required>
         <span class="am-input-group-label log-icon am-radius"><i class="am-icon-lock am-icon-sm am-icon-fw"></i></span>
