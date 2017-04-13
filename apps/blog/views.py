@@ -41,11 +41,11 @@ class LoginView(View):
     def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
-            # username = form.cleaned_data['username']
-            email = form.cleaned_data['email']
-            user = get_object_or_404(User, email=email)
+            username = form.cleaned_data['username']
+            # email = form.cleaned_data['email']
+            # user = get_object_or_404(User, email=email)
             password = form.cleaned_data['password']
-            user = authenticate(username=user.username, password=password)
+            user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
                 try:
