@@ -123,7 +123,7 @@ class IndexCenterView(View):
     template_name = 'blog/index.html'
 
     def get(self, request):
-        articles = ArticleModel.objects.all()
+        articles = ArticleModel.objects.order_by('-create_time')
         paginator = Paginator(articles, 5)
         page = request.GET.get('page')
         try:
@@ -198,7 +198,8 @@ class ArticleView(View):
         day = int(art_date[6:])
         article = get_object_or_404(
                 ArticleModel,
-                create_time__date=datetime.date(year, month, day),
+                # create_time__date=datetime.date(year, month, day),
+                create_time__year=year,
                 pinyin_title=pinyin_title)
         tags = article.tag.all()
         article_prev = ArticleModel.objects.filter(id__lt=article.id).last()

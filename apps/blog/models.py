@@ -61,7 +61,7 @@ class Classify(models.Model):
 
 
 class TagModel(models.Model):
-    tag = models.CharField('article tag', max_length=20)
+    tag = models.CharField('article tag', max_length=20, unique=True)
 
     def __str__(self):
         return self.tag
