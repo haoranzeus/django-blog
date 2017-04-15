@@ -149,7 +149,8 @@ class IndexClassify(View):
     template_name = 'blog/index.html'
 
     def get(self, request, classify):
-        articles = ArticleModel.objects.filter(classify=classify)
+        articles = ArticleModel.objects.filter(classify=classify).order_by(
+                '-create_time')
         paginator = Paginator(articles, 5)
         page = request.GET.get('page')
         try:
