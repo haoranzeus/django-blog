@@ -124,7 +124,7 @@ class IndexCenterView(View):
 
     def get(self, request):
         articles = ArticleModel.objects.order_by('-create_time')
-        paginator = Paginator(articles, 5)
+        paginator = Paginator(articles, 10)
         page = request.GET.get('page')
         try:
             page_obj = paginator.page(page)
@@ -151,7 +151,7 @@ class IndexClassify(View):
     def get(self, request, classify):
         articles = ArticleModel.objects.filter(classify=classify).order_by(
                 '-create_time')
-        paginator = Paginator(articles, 5)
+        paginator = Paginator(articles, 10)
         page = request.GET.get('page')
         try:
             page_obj = paginator.page(page)
