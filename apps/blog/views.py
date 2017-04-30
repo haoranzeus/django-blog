@@ -1,5 +1,7 @@
 import os
 import datetime
+from itertools import groupby
+
 from django.views import View
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -208,15 +210,49 @@ class IndexTag(View):
 
 
 class TimeLineView(View):
+    """
+    data structure:
+    timeline: [
+        {
+            year: xxxx,
+            year_group: [
+                {
+                    month: xx,
+                    articles: [
+                        articlemodel,
+                    ]
+                }
+            ]
+        }
+    ]
+    """
     template_name = 'blog/timeline.html'
 
     def get(self, request):
         articles = ArticleModel.objects.all().order_by('-create_time')
+        timeline = []
+        for year, year_group in groupby(
+                articles, lambda article: article.create_time.year):
+            year_dict = {
+                'year': year,
+                'year_group': [],
+            }
+            for month, month_group in groupby(
+                    year_group, lambda article: article.create_time.month):
+                month_dict = {
+                    'month': month,
+                    'articles': []
+                }
+                for article in month_group:
+                    month_dict['articles'].append(article)
+                year_dict['year_group'].append(month_dict)
+            timeline.append(year_dict)
         classifications = Classify.objects.all()
         kwargs = {
             'articles': articles,
-            'classifications': classifications,
             'current_path': request.path,
+            'timeline': timeline,
+            'classifications': classifications,
         }
         if request.user.is_authenticated:
             kwargs['logged'] = True
@@ -237,19 +273,21 @@ class ArticleView(View):
                 # create_time__date=datetime.date(year, month, day),
                 create_time__year=year,
                 pinyin_title=pinyin_title)
-        tags = article.tag.all()
+        art_tags = article.tag.all()
         article_prev = ArticleModel.objects.filter(id__lt=article.id).last()
         article_next = ArticleModel.objects.filter(id__gt=article.id).first()
         classifications = Classify.objects.all()
         comments = Comment.objects.filter(article=article)
+        tags = TagModel.objects.all()
         kwargs = {
             'article': article,
-            'tags': tags,
+            'art_tags': art_tags,
             'article_prev': article_prev,
             'article_next': article_next,
             'classifications': classifications,
             'comments': comments,
             'current_path': request.path,
+            'tags': tags,
         }
         if request.user.is_authenticated:
             kwargs['logged'] = True

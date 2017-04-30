@@ -65,6 +65,7 @@
       {% for classify in classifications %}
       <li><a href="{% url "blog:indexclassify" classify=classify.id %}">{{ classify.name }}</a></li>
       {% endfor %}
+      <li><a href="{% url "blog:timeline" %}">时间轴</a></li>
       <!-- <li><a href="lw-timeline.html">存档</a></li> -->
     </ul>
     <!--
