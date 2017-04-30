@@ -10,7 +10,7 @@ from django.db.utils import IntegrityError
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 from .forms import LoginForm, RegisterForm, CommentForm
-from .models import ArticleModel, Classify, Comment
+from .models import ArticleModel, Classify, Comment, TagModel
 
 # Create your views here.
 
@@ -133,10 +133,12 @@ class IndexCenterView(View):
         except EmptyPage:
             page_obj = paginator.page(paginator.num_pages)
         classifications = Classify.objects.all()
+        tags = TagModel.objects.all()
         kwargs = {
             'page_obj': page_obj,
             'classifications': classifications,
             'current_path': request.path,
+            'tags': tags,
         }
         if request.user.is_authenticated:
             kwargs['logged'] = True
@@ -160,10 +162,43 @@ class IndexClassify(View):
         except EmptyPage:
             page_obj = paginator.page(paginator.num_pages)
         classifications = Classify.objects.all()
+        tags = TagModel.objects.all()
         kwargs = {
             'page_obj': page_obj,
             'classifications': classifications,
             'current_path': request.path,
+            'tags': tags,
+        }
+        if request.user.is_authenticated:
+            kwargs['logged'] = True
+        else:
+            kwargs['logged'] = False
+        return render(request, self.template_name, kwargs)
+
+
+class IndexTag(View):
+    """
+    index page when click a tag
+    """
+    template_name = 'blog/index.html'
+
+    def get(self, request, tag):
+        articles = ArticleModel.objects.filter(tag=tag).order_by('-create_time')
+        paginator = Paginator(articles, 10)
+        page = request.GET.get('page')
+        try:
+            page_obj = paginator.page(page)
+        except PageNotAnInteger:
+            page_obj = paginator.page(1)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
+        classifications = Classify.objects.all()
+        tags = TagModel.objects.all()
+        kwargs = {
+            'page_obj': page_obj,
+            'classifications': classifications,
+            'current_path': request.path,
+            'tags': tags,
         }
         if request.user.is_authenticated:
             kwargs['logged'] = True

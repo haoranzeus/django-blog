@@ -23,19 +23,22 @@
             </p>
         </div>
         -->
-        <!-- 标签墙
         <div class="blog-clear-margin blog-sidebar-widget blog-bor am-g ">
             <h2 class="blog-title"><span>TAG cloud</span></h2>
             <div class="am-u-sm-12 blog-clear-padding">
+            <!--
             <a href="" class="blog-tag">amaze</a>
             <a href="" class="blog-tag">妹纸 UI</a>
             <a href="" class="blog-tag">HTML5</a>
             <a href="" class="blog-tag">这是标签</a>
             <a href="" class="blog-tag">Impossible</a>
             <a href="" class="blog-tag">开源前端框架</a>
+            -->
+              {% for tag in tags %}
+              <a href="{% url 'blog:indextag' tag=tag.id %}" class="blog-tag">{{ tag.tag }}</a>
+              {% endfor %}
             </div>
         </div>
-        -->
         <!-- 装逼短句
         <div class="blog-sidebar-widget blog-bor">
             <h2 class="blog-title"><span>么么哒</span></h2>

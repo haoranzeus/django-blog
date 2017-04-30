@@ -10,6 +10,8 @@ urlpatterns = [
     url(r'^index/?$', views.IndexCenterView.as_view(), name='indexcenter'),
     url(r'^indexclassify/(?P<classify>[0-9]+)/?$',
         views.IndexClassify.as_view(), name='indexclassify'),
+    url(r'^indextag/(?P<tag>[0-9]+)/?$',
+        views.IndexTag.as_view(), name='indextag'),
     url(r'^timeline/?$', views.TimeLineView.as_view(), name='timeline'),
     url(r'^article/(?P<art_date>[0-9]{8})/(?P<pinyin_title>.+)/?$',
         views.ArticleView.as_view(), name='article'),
